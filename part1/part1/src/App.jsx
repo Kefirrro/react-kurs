@@ -23,6 +23,9 @@ const Part = ({ name, exercises }) => {
 const Total = ({ exercises1, exercises2, exercises3 }) => {
   return <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>;
 }
+const SecondTotal = ({ parts }) => {
+  return <p>Zadanie nauczyciela: {parts[2].name + " " + parts[2].exercises}</p>
+}
 
 const App = () => {
   const course = 'Half Stack application development';
@@ -37,6 +40,7 @@ const App = () => {
       <Header course={course} />
       <Content parts={parts} />
       <Total exercises1={parts[0].exercises} exercises2={parts[1].exercises} exercises3={parts[2].exercises} />
+      <SecondTotal parts={parts}/>
     </div>
   );
 }
