@@ -1,48 +1,96 @@
-const Header = ({ course }) => {
-  return <h1>{course}</h1>;
-}
+import { useState } from 'react'
 
-const Content = ({ parts }) => {
+const Button = ({ handleClick, text }) => (
+  <button onClick={handleClick}>{text}</button>
+)
+
+const StatisticLine = ({ text, value }) => (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
+)
+
+const Statistics = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad
+
+  if (all === 0) {
+    return <p>No feedback given</p>
+  }
+
+  const average = (good - bad) / all
+  const positive = (good / all) * 100
+
   return (
-    <div>
-      {parts.map(part => (
-        <Part key={part.name} name={part.name} exercises={part.exercises} />
-      ))}
-    </div>
-  );
-};
-
-const Part = ({ name, exercises }) => {
-  return (
-    <p>
-      {name} {exercises}
-    </p>
-  );
-}
-
-const Total = ({ exercises1, exercises2, exercises3 }) => {
-  return <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>;
-}
-const SecondTotal = ({ parts }) => {
-  return <p>Zadanie nauczyciela: {parts[2].name + " " + parts[2].exercises}</p>
+    <table>
+      <tbody>
+        <StatisticLine text="good" value={good} />
+        <StatisticLine text="neutral" value={neutral} />
+        <StatisticLine text="bad" value={bad} />
+        <StatisticLine text="all" value={all} />
+        <StatisticLine text="average" value={average} />
+        <StatisticLine text="positive" value={`${positive} %`} />
+      </tbody>
+    </table>
+  )
 }
 
 const App = () => {
-  const course = 'Half Stack application development';
-  const parts = [
-    { name: 'Fundamentals of React', exercises: 10 },
-    { name: 'Using props to pass data', exercises: 7 },
-    { name: 'State of a component', exercises: 14 }
-  ];
+
+  const anecdotes = [
+    'If it hurts, do it more often.',
+    'Adding manpower to a late software project makes it later!',
+    'The first 90 percent of the code accounts for the first 90 percent of the development time...',
+    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    'Premature optimization is the root of all evil.',
+    'Debugging is twice as hard as writing the code in the first place.',
+    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays.',
+    'The only way to go fast, is to go well.'
+  ]
+
+  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+
+  const nextAnecdote = () => {
+    setSelected(Math.floor(Math.random() * anecdotes.length))
+  }
+
+  const vote = () => {
+    const copy = [...votes]
+    copy[selected] += 1
+    setVotes(copy)
+  }
+
+  const maxVotes = Math.max(...votes)
+  const bestIndex = votes.indexOf(maxVotes)
 
   return (
     <div>
-      <Header course={course} />
-      <Content parts={parts} />
-      <Total exercises1={parts[0].exercises} exercises2={parts[1].exercises} exercises3={parts[2].exercises} />
-      <SecondTotal parts={parts}/>
+      <h1>Anecdote of the day</h1>
+      <p>{anecdotes[selected]}</p>
+      <p>has {votes[selected]} votes</p>
+
+      <button onClick={vote}>vote</button>
+      <button onClick={nextAnecdote}>next anecdote</button>
+
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdotes[bestIndex]}</p>
+      <p>has {maxVotes} votes</p>
+
+      <h1>give feedback</h1>
+
+      <Button handleClick={() => setGood(good + 1)} text="good" />
+      <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />
+      <Button handleClick={() => setBad(bad + 1)} text="bad" />
+
+      <h1>statistics</h1>
+
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
-  );
+  )
 }
 
 export default App
